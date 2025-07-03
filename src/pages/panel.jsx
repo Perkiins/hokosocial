@@ -1,23 +1,28 @@
-import React, { useEffect } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import React from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import Terminal from './Terminal';
 
-export default function Panel() {
+const Panel = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-    }
-  }, [navigate]);
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Sidebar />
-      <div style={{ flexGrow: 1, padding: '20px' }}>
-        <Outlet />
+    <div style={{ display: 'flex', height: '100vh' }}>
+      <Sidebar onLogout={handleLogout} />
+      <div style={{ flex: 1, padding: '30px' }}>
+        <Routes>
+          <Route path="/" element={<Navigate to="terminal" />} />
+          <Route path="terminal" element={<Terminal />} />
+          {/* Aquí puedes añadir más rutas de apps en el futuro */}
+        </Routes>
       </div>
     </div>
   );
-}
+};
+
+export default Panel;
