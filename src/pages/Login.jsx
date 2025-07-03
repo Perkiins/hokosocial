@@ -11,7 +11,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch('https://threadsfollower.onrender.com/login', {
+      const res = await fetch('https://hokosocial.onrender.com/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
