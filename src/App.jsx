@@ -4,18 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Panel from './pages/Panel';
 import Terminal from './pages/Terminal';
-
-// App.jsx (fragmento dentro de tus rutas)
 import PrivateRoute from './components/PrivateRoute';
-
-<Route
-  path="/panel"
-  element={
-    <PrivateRoute>
-      <Panel />
-    </PrivateRoute>
-  }
-/>
 
 const App = () => {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -25,7 +14,16 @@ const App = () => {
       <Routes>
         <Route path="/login" element={isAuthenticated ? <Navigate to="/panel" /> : <Login />} />
         <Route path="/register" element={isAuthenticated ? <Navigate to="/panel" /> : <Register />} />
-        <Route path="/panel/*" element={isAuthenticated ? <Panel /> : <Navigate to="/login" />} />
+        
+        <Route
+          path="/panel/*"
+          element={
+            <PrivateRoute>
+              <Panel />
+            </PrivateRoute>
+          }
+        />
+
         <Route path="*" element={<Navigate to={isAuthenticated ? "/panel" : "/login"} />} />
       </Routes>
     </Router>
