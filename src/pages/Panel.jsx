@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/panel.css';
-import AdminPanel from './AdminPanel';
+import AdminPanel from './Admin';
 
 const Panel = () => {
   const [tokens, setTokens] = useState(null);
@@ -111,7 +111,7 @@ const Panel = () => {
         </div>
 
         {/* Solo visible para admin */}
-        {user?.rol === 'admin' && <AdminPanel currentUser={user} />}
+        {user?.rol === 'admin' && <Admin currentUser={user} />}
       </main>
     </div>
   );
