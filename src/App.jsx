@@ -5,6 +5,18 @@ import Register from './pages/Register';
 import Panel from './pages/Panel';
 import Terminal from './pages/Terminal';
 
+// App.jsx (fragmento dentro de tus rutas)
+import PrivateRoute from './components/PrivateRoute';
+
+<Route
+  path="/panel"
+  element={
+    <PrivateRoute>
+      <Panel />
+    </PrivateRoute>
+  }
+/>
+
 const App = () => {
   const isAuthenticated = !!localStorage.getItem('token');
 
