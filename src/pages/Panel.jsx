@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/panel.css';
+import AdminPanel from './AdminPanel';
 
 const Panel = () => {
   const [tokens, setTokens] = useState(null);
   const [log, setLog] = useState([]);
   const [mensajeBot, setMensajeBot] = useState('');
+  const [user, setUser] = useState(null); // username y rol
 
   // Obtener datos del usuario autenticado
   useEffect(() => {
@@ -15,6 +17,10 @@ const Panel = () => {
         });
         const data = await res.json();
         setTokens(data.tokens || 0);
+        setUser({
+          username: data.username,
+          rol: data.rol || 'user'
+        });
       } catch (error) {
         console.error('Error al obtener datos del usuario:', error);
       }
@@ -78,12 +84,10 @@ const Panel = () => {
     <div className="panel-wrapper">
       <aside className="sidebar">
         <h2>MAAX 𒉭</h2>
-        <small>Jona Chupas</small>
+        <small>{user?.username || '...'}</small>
+        <button onClick={cerrarSesion}>Cerrar sesión</button>
         <nav>
           <a href="#" className="active">Conseguir Potenciales Seguidores</a>
-          <a href="#">Mi perfil</a>
-          <a href="#">Estadísticas</a>
-          <a href="#">Configuración</a>
         </nav>
       </aside>
 
@@ -94,7 +98,6 @@ const Panel = () => {
         <div className="actions">
           <button onClick={ejecutarBot}>Ejecutar bot</button>
           <button onClick={generarCookies}>Generar cookies</button>
-          <button onClick={cerrarSesion}>Cerrar sesión</button>
         </div>
 
         <div className="terminal-container">
@@ -106,6 +109,9 @@ const Panel = () => {
             {mensajeBot && <div>👉 {mensajeBot}</div>}
           </div>
         </div>
+
+        {/* Solo visible para admin */}
+        {user?.rol === 'admin' && <AdminPanel currentUser={user} />}
       </main>
     </div>
   );
