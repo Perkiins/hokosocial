@@ -14,7 +14,7 @@ export default function Register() {
     setSuccess('');
 
     try {
-      const response = await fetch('https://threadsfollower.onrender.com/register', { // ⬅️ CAMBIA ESTA URL
+      const response = await fetch('https://hokosocial.onrender.com/register', { // ⬅️ CAMBIA ESTA URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
