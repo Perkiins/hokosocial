@@ -9,6 +9,8 @@ const Panel = () => {
   const [user, setUser] = useState(null); // username y rol
 
   // Obtener datos del usuario autenticado
+  const [rol, setRol] = useState('user'); // nuevo estado
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -17,15 +19,12 @@ const Panel = () => {
         });
         const data = await res.json();
         setTokens(data.tokens || 0);
-        setUser({
-          username: data.username,
-          rol: data.rol || 'user'
-        });
+        setRol(data.rol || 'user'); // guardar el rol
       } catch (error) {
         console.error('Error al obtener datos del usuario:', error);
       }
     };
-
+  
     fetchData();
   }, []);
 
