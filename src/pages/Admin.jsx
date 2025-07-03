@@ -22,6 +22,25 @@ const Admin = () => {
     }
   };
 
+  const guardarCambios = async (user) => {
+    const res = await fetch('https://hokosocial.onrender.com/api/update-user', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: user.id,
+        tokens: user.tokens,
+        rol: user.rol
+      })
+    });
+  
+    if (res.ok) {
+      alert('Cambios guardados');
+    } else {
+      alert('Error al guardar cambios');
+    }
+  };
+  
   return (
     <div style={{ padding: '2rem' }}>
       <h2>👑 Panel de Administración</h2>
@@ -36,11 +55,36 @@ const Admin = () => {
         </thead>
         <tbody>
           {usuarios.map(user => (
-            <tr key={user.username}>
+            <tr key={user.id}>
               <td>{user.username}</td>
-              <td>{user.rol}</td>
-              <td>{user.tokens}</td>
-              <td><button onClick={() => eliminarUsuario(user.username)}>❌</button></td>
+              <td>
+                <input
+                  type="number"
+                  value={user.tokens}
+                  onChange={(e) => {
+                    const nuevos = [...usuarios];
+                    nuevos.find(u => u.id === user.id).tokens = parseInt(e.target.value);
+                    setUsuarios(nuevos);
+                  }}
+                />
+              </td>
+              <td>
+                <select
+                  value={user.rol}
+                  onChange={(e) => {
+                    const nuevos = [...usuarios];
+                    nuevos.find(u => u.id === user.id).rol = e.target.value;
+                    setUsuarios(nuevos);
+                  }}
+                >
+                  <option value="user">user</option>
+                  <option value="admin">admin</option>
+                </select>
+              </td>
+              <td>
+                <button onClick={() => eliminarUsuario(user.id)}>❌</button>
+                <button onClick={() => guardarCambios(user)}>💾</button>
+              </td>
             </tr>
           ))}
         </tbody>
