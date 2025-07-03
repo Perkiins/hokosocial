@@ -1,193 +1,77 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Panel de Usuario</title>
+import React, { useState, useEffect, useRef } from "react";
+import "../styles/panel.css"; // Extrae el CSS si quieres separarlo
 
-    <!-- Fuentes -->
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+export default function Panel() {
+  const [logLines, setLogLines] = useState([]);
+  const [mensajeBot, setMensajeBot] = useState("Cargando log...");
+  const terminalRef = useRef(null);
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+  const fetchTerminalLog = async () => {
+    try {
+      const res = await fetch("https://TU_BACKEND_RENDER/panel-data"); // Cambia por tu endpoint real
+      const data = await res.json();
+      setLogLines(data.log_lines || []);
+      setMensajeBot(data.mensaje_bot || "");
+    } catch (err) {
+      setMensajeBot("Error al cargar los datos.");
+    }
+  };
 
-        body {
-            margin: 0;
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f9fafb;
-            color: #1f2937;
-            display: flex;
-            height: 100vh;
-        }
+  useEffect(() => {
+    fetchTerminalLog();
+    const interval = setInterval(fetchTerminalLog, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background-color: #121212;
-            color: #fff;
-            padding: 20px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [logLines]);
 
-        .sidebar h2 {
-            font-family: 'Bebas Neue', sans-serif;
-            margin-bottom: 10px;
-            font-size: 28px;
-            letter-spacing: 1px;
-        }
-
-        .sidebar nav {
-            width: 100%;
-        }
-
-        .sidebar a {
-            display: block;
-            padding: 15px 30px;
-            color: #cbd5e1;
-            text-decoration: none;
-            font-size: 15px;
-            transition: background 0.2s;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            background-color: #1f2937;
-            color: #ffffff;
-        }
-
-        /* Main Content */
-        .main {
-            flex: 1;
-            padding: 30px 40px;
-            overflow-y: auto;
-        }
-
-        .main h1 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 32px;
-            margin-bottom: 10px;
-            color: #111827;
-            letter-spacing: 0.5px;
-        }
-
-        .token-info {
-            font-size: 16px;
-            margin-bottom: 25px;
-            color: #374151;
-        }
-
-        .actions {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-        }
-
-        .actions form button {
-            padding: 12px 20px;
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            font-family: 'Montserrat', sans-serif;
-            transition: background 0.3s;
-        }
-
-        .actions form button:hover {
-            background-color: #2563eb;
-        }
-
-        .terminal-container {
-            max-width: 100%;
-        }
-
-        .terminal {
-            background-color: #000000;
-            color: #10b981;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 14px;
-            width: 700px;
-            height: 350px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            border: 1px solid #334155;
-        }
-
-        .terminal-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #f1f5f9;
-        }
-    </style>
-
-    <script>
-        // Auto-refresh parcial del terminal y scroll abajo automático
-        setInterval(() => {
-            fetch(window.location.href)
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const newLog = doc.querySelector('.terminal').innerHTML;
-                    const terminalDiv = document.querySelector('.terminal');
-                    const wasScrolledToBottom = terminalDiv.scrollTop + terminalDiv.clientHeight >= terminalDiv.scrollHeight - 10;
-
-                    terminalDiv.innerHTML = newLog;
-
-                    if (wasScrolledToBottom) {
-                        terminalDiv.scrollTop = terminalDiv.scrollHeight;
-                    }
-                });
-        }, 4000);
-    </script>
-</head>
-<body>
-
-    <aside class="sidebar">
+  return (
+    <div className="panel-body">
+      <aside className="sidebar">
         <h2>MAAX 𒉭</h2>
-        <small style="margin-bottom: 20px; font-family: 'Montserrat', sans-serif;">Jona Chupas</small>
+        <small style={{ marginBottom: 20, fontFamily: "Montserrat, sans-serif" }}>Jona Chupas</small>
         <nav>
-            <a href="#" class="active">Conseguir Potenciales Seguidores</a>
-            <a href="#">Mi perfil</a>
-            <a href="#">Estadísticas</a>
-            <a href="#">Configuración</a>
+          <a href="#" className="active">Conseguir Potenciales Seguidores</a>
+          <a href="#">Mi perfil</a>
+          <a href="#">Estadísticas</a>
+          <a href="#">Configuración</a>
         </nav>
-    </aside>
+      </aside>
 
-    <main class="main">
+      <main className="main">
         <h1>Conseguir Potenciales Seguidores</h1>
-        <div class="token-info">Tokens disponibles: {{ tokens }}</div>
+        <div className="token-info">Tokens disponibles: [Próximamente]</div>
 
-        <div class="actions">
-            <form method="POST" action="{{ url_for('run_bot') }}">
-                <button type="submit">Ejecutar bot</button>
-            </form>
-            <form method="POST" action="{{ url_for('generar_cookies') }}">
-                <button type="submit">Generar cookies</button>
-            </form>
-            <form method="GET" action="{{ url_for('logout') }}">
-                <button type="submit">Cerrar sesión</button>
-            </form>
+        <div className="actions">
+          <form method="POST" action="https://TU_BACKEND_RENDER/run_bot">
+            <button type="submit">Ejecutar bot</button>
+          </form>
+          <form method="POST" action="https://TU_BACKEND_RENDER/generar_cookies">
+            <button type="submit">Generar cookies</button>
+          </form>
+          <form method="GET" action="https://TU_BACKEND_RENDER/logout">
+            <button type="submit">Cerrar sesión</button>
+          </form>
         </div>
 
-        <div class="terminal-container">
-            <div class="terminal">
-                <div class="terminal-title">[ Terminal del bot ]</div>
-                {% for linea in log_lines %}
-                    {{ linea }}<br>
-                {% endfor %}
-                {% if mensaje_bot %}
-                    <br>👉 {{ mensaje_bot }}
-                {% endif %}
-            </div>
+        <div className="terminal-container">
+          <div className="terminal" ref={terminalRef}>
+            <div className="terminal-title">[ Terminal del bot ]</div>
+            {logLines.map((linea, i) => (
+              <div key={i}>{linea}</div>
+            ))}
+            {mensajeBot && (
+              <div style={{ marginTop: "8px" }}>
+                👉 {mensajeBot}
+              </div>
+            )}
+          </div>
         </div>
-    </main>
-
-</body>
-</html>
+      </main>
+    </div>
+  );
+}
