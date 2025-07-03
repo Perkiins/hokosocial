@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function Register() {
+const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
     try {
-      const response = await fetch('https://hokosocial.onrender.com/register', { // ⬅️ CAMBIA ESTA URL
+      const response = await fetch('https://hokosocial.onrender.com/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,13 +22,14 @@ export default function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess('Usuario registrado con éxito. Redirigiendo...');
-        setTimeout(() => navigate('/login'), 1500);
+        localStorage.setItem('token', data.token);
+        navigate('/panel');
       } else {
-        setError(data.message || 'Error al registrar');
+        setErrorMsg(data.message || 'Error al registrarse');
       }
-    } catch (err) {
-      setError('Error al conectar con el servidor');
+    } catch (error) {
+      console.error('Error en registro:', error);
+      setErrorMsg('Error al conectarse al servidor');
     }
   };
 
@@ -53,11 +51,12 @@ export default function Register() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Registrar</button>
+        <button type="submit">Registrarse</button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
-      <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>
+      <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
+      {errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
     </div>
   );
-}
+};
+
+export default Register;
