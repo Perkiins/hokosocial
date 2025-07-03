@@ -1,89 +1,142 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Registro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: #f3f4f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .form-container {
-            background: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-        h1 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 32px;
-            margin-bottom: 25px;
-            color: #111827;
-            letter-spacing: 0.5px;
-        }
-        input {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-            font-size: 15px;
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: #10b981;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #059669;
-        }
-        a {
-            display: block;
-            margin-top: 15px;
-            font-size: 14px;
-            color: #4b5563;
-            text-decoration: none;
-        }
-        li {
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-<div class="form-container">
-    <h1>Crear cuenta</h1>
-    <form method="post">
-        <input type="text" name="username" placeholder="Usuario" required>
-        <input type="password" name="password" placeholder="Contraseña" required>
-        <button type="submit">Registrar</button>
-    </form>
-    <a href="{{ url_for('login') }}">¿Ya tienes cuenta? Inicia sesión</a>
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul>
-          {% for category, message in messages %}
-            <li style="color: {% if category == 'success' %}green{% elif category == 'error' %}red{% else %}black{% endif %};">
-              {{ message }}
-            </li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-</div>
-</body>
-</html>
+export default function Register() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const navigate = useNavigate();
+
+  const BACKEND_URL = "https://threads-follower.onrender.com"; // Cambia por tu URL real
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${BACKEND_URL}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setMensaje("✅ Registro exitoso. Redirigiendo...");
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      } else {
+        setMensaje(data.message || "Hubo un error al registrarse.");
+      }
+    } catch (err) {
+      setMensaje("Error de conexión con el servidor.");
+    }
+  };
+
+  return (
+    <div style={{
+      fontFamily: "'Montserrat', sans-serif",
+      background: "#f3f4f6",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh",
+      margin: 0
+    }}>
+      <div style={{
+        background: "#fff",
+        padding: 40,
+        borderRadius: 10,
+        boxShadow: "0 6px 15px rgba(0,0,0,0.1)",
+        width: "100%",
+        maxWidth: 400,
+        textAlign: "center"
+      }}>
+        <h1 style={{
+          fontFamily: "'Bebas Neue', sans-serif",
+          fontSize: 32,
+          marginBottom: 25,
+          color: "#111827",
+          letterSpacing: "0.5px"
+        }}>
+          Crear cuenta
+        </h1>
+
+        <form onSubmit={handleRegister}>
+          <input
+            type="text"
+            name="username"
+            placeholder="Usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            style={{
+              width: "100%",
+              padding: 14,
+              margin: "10px 0",
+              borderRadius: 6,
+              border: "1px solid #cbd5e1",
+              fontSize: 15
+            }}
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            style={{
+              width: "100%",
+              padding: 14,
+              margin: "10px 0",
+              borderRadius: 6,
+              border: "1px solid #cbd5e1",
+              fontSize: 15
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: 14,
+              backgroundColor: "#10b981",
+              color: "white",
+              border: "none",
+              borderRadius: 6,
+              fontSize: 16,
+              cursor: "pointer"
+            }}
+          >
+            Registrar
+          </button>
+        </form>
+
+        <a
+          href="/login"
+          style={{
+            display: "block",
+            marginTop: 15,
+            fontSize: 14,
+            color: "#4b5563",
+            textDecoration: "none"
+          }}
+        >
+          ¿Ya tienes cuenta? Inicia sesión
+        </a>
+
+        {mensaje && (
+          <div style={{
+            marginTop: 20,
+            color: mensaje.startsWith("✅") ? "green" : "red",
+            fontSize: 14
+          }}>
+            {mensaje}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
