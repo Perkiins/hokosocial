@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import "../styles/panel.css"; // Extrae el CSS si quieres separarlo
+import "../styles/panel.css";
 
 export default function Panel() {
   const [logLines, setLogLines] = useState([]);
-  const [mensajeBot, setMensajeBot] = useState("Cargando log...");
+  const [mensajeBot, setMensajeBot] = useState("");
   const terminalRef = useRef(null);
 
   const fetchTerminalLog = async () => {
     try {
-      const res = await fetch("https://TU_BACKEND_RENDER/panel-data"); // Cambia por tu endpoint real
+      const res = await fetch("https://TU_BACKEND_RENDER/panel-data");
       const data = await res.json();
       setLogLines(data.log_lines || []);
       setMensajeBot(data.mensaje_bot || "");
-    } catch (err) {
+    } catch {
       setMensajeBot("Error al cargar los datos.");
     }
   };
@@ -33,7 +33,7 @@ export default function Panel() {
     <div className="panel-body">
       <aside className="sidebar">
         <h2>MAAX 𒉭</h2>
-        <small style={{ marginBottom: 20, fontFamily: "Montserrat, sans-serif" }}>Jona Chupas</small>
+        <small style={{ marginBottom: 20 }}>Jona Chupas</small>
         <nav>
           <a href="#" className="active">Conseguir Potenciales Seguidores</a>
           <a href="#">Mi perfil</a>
@@ -47,28 +47,23 @@ export default function Panel() {
         <div className="token-info">Tokens disponibles: [Próximamente]</div>
 
         <div className="actions">
-          <form method="POST" action="https://TU_BACKEND_RENDER/run_bot">
-            <button type="submit">Ejecutar bot</button>
-          </form>
-          <form method="POST" action="https://TU_BACKEND_RENDER/generar_cookies">
-            <button type="submit">Generar cookies</button>
-          </form>
-          <form method="GET" action="https://TU_BACKEND_RENDER/logout">
-            <button type="submit">Cerrar sesión</button>
-          </form>
+          <button onClick={() => {
+            fetch("https://TU_BACKEND_RENDER/run_bot", { method: "POST" });
+          }}>Ejecutar bot</button>
+          <button onClick={() => {
+            fetch("https://TU_BACKEND_RENDER/generar_cookies", { method: "POST" });
+          }}>Generar cookies</button>
+          <button onClick={() => {
+            fetch("https://TU_BACKEND_RENDER/logout", { method: "GET" });
+            // También limpia token y redirige si usas login real
+          }}>Cerrar sesión</button>
         </div>
 
         <div className="terminal-container">
           <div className="terminal" ref={terminalRef}>
             <div className="terminal-title">[ Terminal del bot ]</div>
-            {logLines.map((linea, i) => (
-              <div key={i}>{linea}</div>
-            ))}
-            {mensajeBot && (
-              <div style={{ marginTop: "8px" }}>
-                👉 {mensajeBot}
-              </div>
-            )}
+            {logLines.map((line, i) => <div key={i}>{line}</div>)}
+            {mensajeBot && <div style={{ marginTop: 8 }}>👉 {mensajeBot}</div>}
           </div>
         </div>
       </main>
