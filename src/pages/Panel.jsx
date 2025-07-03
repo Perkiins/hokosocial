@@ -41,11 +41,24 @@ const Panel = () => {
   }, []);
 
   // Funciones de acción
-  const ejecutarBot = () => {
-    fetch('https://hokosocial.onrender.com/api/run-bot', {
-      method: 'POST',
-      credentials: 'include'
-    });
+  const ejecutarBot = async () => {
+    try {
+      const res = await fetch('https://hokosocial.onrender.com/api/run-bot', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      const data = await res.json();
+
+      if (data.tokens_restantes !== undefined) {
+        setTokens(data.tokens_restantes);
+      }
+
+      if (data.message) {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error('Error al ejecutar el bot:', err);
+    }
   };
 
   const generarCookies = () => {
@@ -55,10 +68,11 @@ const Panel = () => {
     });
   };
 
-const cerrarSesion = () => {
-  localStorage.removeItem('token');
-  window.location.href = '/login';
-};
+  const cerrarSesion = () => {
+    localStorage.removeItem('token');
+    alert('Sesión cerrada');
+    window.location.href = '/login';
+  };
 
   return (
     <div className="panel-wrapper">
