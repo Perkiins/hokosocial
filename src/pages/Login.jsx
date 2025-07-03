@@ -11,7 +11,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://hokosocial.onrender.com/login', {
+      const response = await fetch('https://hokosocial.onrender.com/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
