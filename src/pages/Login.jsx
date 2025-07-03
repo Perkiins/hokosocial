@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -7,12 +7,11 @@ export default function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
 
     try {
-      const response = await fetch('https://threadsfollower.onrender.com/login', { // ⬅️ CAMBIA ESTA URL
+      const res = await fetch('https://your-render-url.onrender.com/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -20,25 +19,26 @@ export default function Login() {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (response.ok) {
+      if (res.ok && data.token) {
         localStorage.setItem('token', data.token);
         navigate('/panel');
       } else {
-        setError(data.message || 'Error al iniciar sesión');
+        setError(data.message || 'Credenciales incorrectas');
       }
     } catch (err) {
-      setError('Error al conectar con el servidor');
+      setError('Error de conexión con el servidor');
     }
   };
 
   return (
     <div className="form-container">
       <h1>Inicia sesión</h1>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
+          name="username"
           placeholder="Usuario"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -46,6 +46,7 @@ export default function Login() {
         />
         <input
           type="password"
+          name="password"
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -53,8 +54,8 @@ export default function Login() {
         />
         <button type="submit">Entrar</button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
       <a href="/register">¿No tienes cuenta? Regístrate</a>
+      {error && <p style={{ color: 'red', marginTop: '15px' }}>{error}</p>}
     </div>
   );
 }
