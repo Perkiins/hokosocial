@@ -1,30 +1,23 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/login';
-import Register from './pages/register';
-import Panel from './pages/panel';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Panel from './pages/Panel';
+import Terminal from './pages/Terminal';
 
-function PrivateRoute({ children }) {
-  const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/login" />;
-}
+const App = () => {
+  const isAuthenticated = !!localStorage.getItem('token');
 
-export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/panel"
-          element={
-            <PrivateRoute>
-              <Panel />
-            </PrivateRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/login" />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/panel" /> : <Login />} />
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/panel" /> : <Register />} />
+        <Route path="/panel/*" element={isAuthenticated ? <Panel /> : <Navigate to="/login" />} />
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/panel" : "/login"} />} />
       </Routes>
     </Router>
   );
-}
+};
+
+export default App;
