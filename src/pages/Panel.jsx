@@ -55,13 +55,10 @@ const Panel = () => {
     });
   };
 
-  const cerrarSesion = () => {
-    fetch('https://hokosocial.onrender.com/api/logout', {
-      credentials: 'include'
-    }).then(() => {
-      window.location.href = '/login';
-    });
-  };
+const cerrarSesion = () => {
+  localStorage.removeItem('token');
+  window.location.href = '/login';
+};
 
   return (
     <div className="panel-wrapper">
