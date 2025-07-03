@@ -1,46 +1,59 @@
 import React from 'react';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
-const Sidebar = () => {
-  const navigate = useNavigate();
+const Sidebar = ({ onLogout }) => {
+  const location = useLocation();
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
-  };
-
-  const linkStyle = ({ isActive }) => ({
-    display: 'block',
-    padding: '12px 16px',
-    color: isActive ? '#ffffff' : '#d1d5db',
-    backgroundColor: isActive ? '#3b82f6' : 'transparent',
-    textDecoration: 'none',
-    borderRadius: '6px',
-    marginBottom: '8px'
-  });
+  const navItems = [
+    { path: 'terminal', label: 'Terminal' },
+    // Aquí puedes añadir más pestañas en el futuro
+  ];
 
   return (
     <div style={{
       width: '220px',
-      backgroundColor: '#1f2937',
-      color: 'white',
-      minHeight: '100vh',
-      padding: '20px',
-      boxSizing: 'border-box'
+      background: '#1f2937',
+      color: '#fff',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '20px 0',
     }}>
-      <h2 style={{ fontSize: '22px', marginBottom: '20px' }}>Hoko Panel - MAAX 𒉭</h2>
-      <NavLink to="/panel/terminal" style={linkStyle}>Terminal</NavLink>
-      <NavLink to="/panel/app1" style={linkStyle}>App 1</NavLink>
-      <NavLink to="/panel/app2" style={linkStyle}>App 2</NavLink>
-      <button onClick={handleLogout} style={{
-        marginTop: '30px',
-        backgroundColor: '#ef4444',
-        border: 'none',
-        padding: '10px 15px',
-        color: 'white',
-        borderRadius: '6px',
-        cursor: 'pointer'
+      <h2 style={{
+        fontFamily: 'Bebas Neue, sans-serif',
+        fontSize: '28px',
+        textAlign: 'center',
+        marginBottom: '30px',
       }}>
+        HokoSocial
+      </h2>
+      {navItems.map(item => (
+        <Link
+          key={item.path}
+          to={`/panel/${item.path}`}
+          style={{
+            padding: '12px 20px',
+            textDecoration: 'none',
+            color: location.pathname.includes(item.path) ? '#10b981' : '#fff',
+            fontWeight: 'bold',
+            backgroundColor: location.pathname.includes(item.path) ? '#374151' : 'transparent'
+          }}
+        >
+          {item.label}
+        </Link>
+      ))}
+      <button
+        onClick={onLogout}
+        style={{
+          marginTop: 'auto',
+          backgroundColor: '#ef4444',
+          border: 'none',
+          padding: '12px',
+          margin: '20px',
+          borderRadius: '6px',
+          color: '#fff',
+          cursor: 'pointer'
+        }}
+      >
         Cerrar sesión
       </button>
     </div>
