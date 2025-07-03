@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './panel.css';
+import '../styles/panel.css';
 
 const Panel = () => {
   const [tokens, setTokens] = useState(null);
