@@ -87,6 +87,7 @@ const Panel = () => {
         <button onClick={cerrarSesion}>Cerrar sesión</button>
         <nav>
           <a href="#" className="active">Conseguir Potenciales Seguidores</a>
+          {rol === 'admin' && (<a href="/admin">👑 Panel Admin</a>)}
         </nav>
       </aside>
 
