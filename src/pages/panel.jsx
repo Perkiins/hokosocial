@@ -1,20 +1,65 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/panel.css";
 
 export default function Panel() {
   const [logLines, setLogLines] = useState([]);
   const [mensajeBot, setMensajeBot] = useState("");
   const terminalRef = useRef(null);
+  const navigate = useNavigate();
+
+  const BACKEND_URL = "https://threads-follower.onrender.com"; // cambia esto si es necesario
+
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login"); // redirige si no hay sesión
+    }
+  }, [token, navigate]);
 
   const fetchTerminalLog = async () => {
     try {
-      const res = await fetch("https://TU_BACKEND_RENDER/panel-data");
+      const res = await fetch(`${BACKEND_URL}/panel-data`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
+
       const data = await res.json();
       setLogLines(data.log_lines || []);
       setMensajeBot(data.mensaje_bot || "");
     } catch {
       setMensajeBot("Error al cargar los datos.");
     }
+  };
+
+  const postToBackend = async (endpoint) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}${endpoint}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
+    } catch {
+      alert("Error al conectar con el backend");
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   useEffect(() => {
@@ -47,16 +92,9 @@ export default function Panel() {
         <div className="token-info">Tokens disponibles: [Próximamente]</div>
 
         <div className="actions">
-          <button onClick={() => {
-            fetch("https://TU_BACKEND_RENDER/run_bot", { method: "POST" });
-          }}>Ejecutar bot</button>
-          <button onClick={() => {
-            fetch("https://TU_BACKEND_RENDER/generar_cookies", { method: "POST" });
-          }}>Generar cookies</button>
-          <button onClick={() => {
-            fetch("https://TU_BACKEND_RENDER/logout", { method: "GET" });
-            // También limpia token y redirige si usas login real
-          }}>Cerrar sesión</button>
+          <button onClick={() => postToBackend("/run_bot")}>Ejecutar bot</button>
+          <button onClick={() => postToBackend("/generar_cookies")}>Generar cookies</button>
+          <button onClick={handleLogout}>Cerrar sesión</button>
         </div>
 
         <div className="terminal-container">
