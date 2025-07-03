@@ -1,47 +1,103 @@
-// src/pages/Panel.jsx
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import './panel.css';
 
 const Panel = () => {
-  const navigate = useNavigate();
+  const [tokens, setTokens] = useState(null);
+  const [log, setLog] = useState([]);
+  const [mensajeBot, setMensajeBot] = useState('');
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+  // Obtener datos del usuario autenticado
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch('https://hokosocial.onrender.com/api/user-data', {
+          credentials: 'include'
+        });
+        const data = await res.json();
+        setTokens(data.tokens || 0);
+      } catch (error) {
+        console.error('Error al obtener datos del usuario:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Cargar log del bot periódicamente
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch('https://hokosocial.onrender.com/api/log', {
+        credentials: 'include'
+      })
+        .then(res => res.json())
+        .then(data => {
+          setLog(data.log_lines || []);
+          setMensajeBot(data.mensaje_bot || '');
+        })
+        .catch(err => console.error('Error al cargar log:', err));
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Funciones de acción
+  const ejecutarBot = () => {
+    fetch('https://hokosocial.onrender.com/api/run-bot', {
+      method: 'POST',
+      credentials: 'include'
+    });
+  };
+
+  const generarCookies = () => {
+    fetch('https://hokosocial.onrender.com/api/generar-cookies', {
+      method: 'POST',
+      credentials: 'include'
+    });
+  };
+
+  const cerrarSesion = () => {
+    fetch('https://hokosocial.onrender.com/api/logout', {
+      credentials: 'include'
+    }).then(() => {
+      window.location.href = '/login';
+    });
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>¡Bienvenido a HokoSocial!</h1>
-      <p style={styles.subtitle}>Estás autenticado con éxito.</p>
-      <button onClick={handleLogout} style={styles.button}>Cerrar sesión</button>
+    <div className="panel-wrapper">
+      <aside className="sidebar">
+        <h2>MAAX 𒉭</h2>
+        <small>Jona Chupas</small>
+        <nav>
+          <a href="#" className="active">Conseguir Potenciales Seguidores</a>
+          <a href="#">Mi perfil</a>
+          <a href="#">Estadísticas</a>
+          <a href="#">Configuración</a>
+        </nav>
+      </aside>
+
+      <main className="main">
+        <h1>Conseguir Potenciales Seguidores</h1>
+        <div className="token-info">Tokens disponibles: {tokens}</div>
+
+        <div className="actions">
+          <button onClick={ejecutarBot}>Ejecutar bot</button>
+          <button onClick={generarCookies}>Generar cookies</button>
+          <button onClick={cerrarSesion}>Cerrar sesión</button>
+        </div>
+
+        <div className="terminal-container">
+          <div className="terminal">
+            <div className="terminal-title">[ Terminal del bot ]</div>
+            {log.map((linea, idx) => (
+              <div key={idx}>{linea}</div>
+            ))}
+            {mensajeBot && <div>👉 {mensajeBot}</div>}
+          </div>
+        </div>
+      </main>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    textAlign: 'center',
-    marginTop: '80px',
-    fontFamily: 'Arial, sans-serif'
-  },
-  title: {
-    fontSize: '28px',
-    color: '#10b981'
-  },
-  subtitle: {
-    fontSize: '16px',
-    color: '#374151',
-    marginBottom: '20px'
-  },
-  button: {
-    backgroundColor: '#ef4444',
-    color: '#fff',
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '8px',
-    cursor: 'pointer'
-  }
 };
 
 export default Panel;
