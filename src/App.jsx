@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Panel from './pages/Panel';
 import Terminal from './pages/Terminal';
 import PrivateRoute from './components/PrivateRoute';
+import Admin from './pages/Admin';
 
 const App = () => {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -14,7 +15,8 @@ const App = () => {
       <Routes>
         <Route path="/login" element={isAuthenticated ? <Navigate to="/panel" /> : <Login />} />
         <Route path="/register" element={isAuthenticated ? <Navigate to="/panel" /> : <Register />} />
-        
+        <Route path="/admin" element={<Admin />} />
+
         <Route
           path="/panel/*"
           element={
