@@ -7,6 +7,7 @@ const Panel = () => {
   const [log, setLog] = useState([]);
   const [mensajeBot, setMensajeBot] = useState('');
   const [user, setUser] = useState(null); // username y rol
+  const [active, setActive] = useState('panel');
 
   // Obtener datos del usuario autenticado
   const [rol, setRol] = useState('user'); // nuevo estado
@@ -19,7 +20,11 @@ const Panel = () => {
         });
         const data = await res.json();
         setTokens(data.tokens || 0);
-        setRol(data.rol || 'user'); // guardar el rol
+        setRol(data.rol || 'user');
+        setUser({
+          username: data.username,
+          rol: data.rol
+        });
       } catch (error) {
         console.error('Error al obtener datos del usuario:', error);
       }
@@ -86,7 +91,6 @@ const Panel = () => {
         <button onClick={cerrarSesion}>Cerrar sesión</button>
         <nav>
           <a href="#" className="active">Conseguir Potenciales Seguidores</a>
-          {/* Este botón solo si el user es admin */}
           {user?.rol === 'admin' && (
             <button onClick={() => setActive("admin")}>👑 Panel Admin</button>
           )}
