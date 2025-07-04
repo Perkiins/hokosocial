@@ -78,7 +78,6 @@ const Panel = () => {
     alert('Sesión cerrada');
     window.location.href = '/login';
   };
-
   return (
     <div className="panel-wrapper">
       <aside className="sidebar">
@@ -87,7 +86,10 @@ const Panel = () => {
         <button onClick={cerrarSesion}>Cerrar sesión</button>
         <nav>
           <a href="#" className="active">Conseguir Potenciales Seguidores</a>
-          {rol === 'admin' && (<a href="/admin">👑 Panel Admin</a>)}
+          {/* Este botón solo si el user es admin */}
+          {user?.rol === 'admin' && (
+            <button onClick={() => setActive("admin")}>👑 Panel Admin</button>
+          )}
         </nav>
       </aside>
 
@@ -111,7 +113,9 @@ const Panel = () => {
         </div>
 
         {/* Solo visible para admin */}
-        {user?.rol === 'admin' && <Admin currentUser={user} />}
+        {active === "admin" && user?.rol === 'admin' && (
+          <Admin currentUser={user} />
+        )}
       </main>
     </div>
   );
