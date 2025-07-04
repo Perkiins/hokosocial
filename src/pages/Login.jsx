@@ -22,7 +22,6 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok && data.token) {
-        localStorage.setItem('token', data.token);
         navigate('/panel');
       } else {
         setErrorMsg(data.message || 'Credenciales incorrectas');
