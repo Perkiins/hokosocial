@@ -27,6 +27,9 @@ const Login = () => {
         <input type="password" placeholder="Contraseña" onChange={(e) => setPassword(e.target.value)} />
         <button type="submit">Entrar</button>
       </form>
+      <p style={{ marginTop: '15px' }}>
+        ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+      </p>
     </div>
   );
 };
