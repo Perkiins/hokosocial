@@ -27,6 +27,9 @@ const Register = () => {
         <input type="password" placeholder="Contraseña" onChange={(e) => setPassword(e.target.value)} />
         <button type="submit">Registrarse</button>
       </form>
+      <p style={{ marginTop: '15px' }}>
+        ¿Ya tienes cuenta? <a href="/login">Inicia sesión</a>
+      </p>
     </div>
   );
 };
